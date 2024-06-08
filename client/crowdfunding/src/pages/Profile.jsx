@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 
-import { DisplayCampaigns } from '../components';
+// import { DisplayCampaigns } from '../components';
 import { useStateContext } from '../context'
-
+import DisplayAllCampaigns from '../components/DisplayAllCampaign';
 const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
@@ -21,7 +21,7 @@ const Profile = () => {
   }, [address, contract]);
 
   return (
-    <DisplayCampaigns 
+    <DisplayAllCampaigns 
       title="All Campaigns"
       isLoading={isLoading}
       campaigns={campaigns}

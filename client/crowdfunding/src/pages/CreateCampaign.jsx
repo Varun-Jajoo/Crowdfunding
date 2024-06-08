@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
-
+import { HiSparkles } from "react-icons/hi";
 import { useStateContext } from '../context';
 import { money } from '../assets';
 import { CustomButton, FormField, Loader } from '../components';
 import { checkIfImage } from '../utils';
-
+import axios from 'axios';
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +39,36 @@ const CreateCampaign = () => {
       }
     })
   }
+  async function handleGenerate() {
+    try {
+      const response = await axios({
+        url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyD66npWWEDp8zXmnI2X9FMPQwDQs6A4NIs",
+        method: "post",
+        data: {
+          contents: [
+            {
+              parts: [
+                {
+                  text: `enhance tis text  ${form.description} `,
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      console.log(
+        response["data"]["candidates"][0]["content"]["parts"][0]["text"].replace(/\*/g, " ")
+      );
+      const result = response["data"]["candidates"][0]["content"]["parts"][0]["text"].replace(/\*/g, " ");
+      setForm(prevForm => ({
+        ...prevForm,
+        description: result
+      }));
+    } catch (error) {
+      console.log("Sorry - Something went wrong. Please try again!");
+    }
+  }
 
   return (
     <div className="bg-[#000000] flex justify-center items-center flex-col rounded-[10px] sm:p-10 p-4">
@@ -72,6 +102,7 @@ const CreateCampaign = () => {
             value={form.description}
             handleChange={(e) => handleFormFieldChange('description', e)}
           />
+        <button type='button' className='w-[13rem] flex items-center justify-center py-[15px] gap-1 bg-green-400 rounded-[7px] font-epilogue font-medium text-[18px] text-white' onClick={handleGenerate}> Enhance with AI  <HiSparkles /></button>
 
         <div className="w-full flex justify-start items-center p-4 bg-[#8c6dfd] h-[120px] rounded-[10px]">
           <img src={money} alt="money" className="w-[40px] h-[40px] object-contain"/>

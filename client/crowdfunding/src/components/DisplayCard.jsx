@@ -1,57 +1,22 @@
-import React, { useState,useEffect } from 'react';
+import React from 'react';
 import NFT from '../context/NFT';
 import { tagType, thirdweb } from '../assets';
 import { daysLeft } from '../utils';
 
-const FundCard = ({ owner, title, description, target, deadline, amountCollected, image, handleClick,completed }) => {
+const DisplayCard = ({ owner, title, description, target, deadline, amountCollected, image, handleClick,completed }) => {
   const remainingDays = daysLeft(deadline);
-  const [choice,setChoice] = useState('')
-
-  const handleGenerate = async () => {
-    
-    try {
-      const response = await fetch("https://api.edenai.run/v2/text/generation", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTZhZjY3NzUtNDM0ZC00YzhiLWE5OTMtMzg0YjdhODgyOGYxIiwidHlwZSI6ImFwaV90b2tlbiJ9.-5jwvonLSSasi9EnAzxU-pezBuKFXqBX5Ikbz6Ybo3Q",
-        },
-        body: JSON.stringify({
-          providers: "openai",
-          text: `according to ${description} categorize it in one word and one word only.keep it easy and basic words that are used for minimal categorization`,
-          temperature: 0.2,
-          max_tokens: 500,
-          fallback_providers: "",
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      const generatedText = data.openai.generated_text;
-      setChoice(generatedText)
-     
-      
-    } catch (error) {
-      console.error("Error:", error);
-    }
-    
-  };
-
-  useEffect(() => {
-    handleGenerate();
-  }, []);
+  const remainingDays1 = Math.abs(daysLeft(deadline));
+  
   return (
     <>
-    {remainingDays >= 0  ? (
+    
     <div className="sm:w-[288px] w-full rounded-[15px] bg-[#1c1c24] cursor-pointer" onClick={handleClick}>
       <img src={image} alt="fund" className="w-full h-[158px] object-cover rounded-[15px]"/>
 
       <div className="flex flex-col p-4">
         <div className="flex flex-row items-center mb-[18px]">
           <img src={tagType} alt="tag" className="w-[17px] h-[17px] object-contain"/>
-          <p className="ml-[12px] mt-[2px] font-epilogue font-medium text-[12px] text-[#808191]">{choice}</p>
+          <p className="ml-[12px] mt-[2px] font-epilogue font-medium text-[12px] text-[#808191]">Education</p>
         </div>
 
         <div className="block">
@@ -65,8 +30,8 @@ const FundCard = ({ owner, title, description, target, deadline, amountCollected
             <p className="mt-[3px] font-epilogue font-normal text-[12px] leading-[18px] text-[#808191] sm:max-w-[120px] truncate">Raised of {target}</p>
           </div>
           <div className="flex flex-col">
-            <h4 className="font-epilogue font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">{remainingDays}</h4>
-            <p className="mt-[3px] font-epilogue font-normal text-[12px] leading-[18px] text-[#808191] sm:max-w-[120px] truncate">Days Left</p>
+            <h4 className="font-epilogue font-semibold text-[14px] text-[#b2b3bd] leading-[22px]">{remainingDays1}</h4>
+            <p className="mt-[3px] font-epilogue font-normal text-[12px] leading-[18px] text-[#808191] sm:max-w-[120px] truncate">{remainingDays >= 0 ? "Days Left" : "Days Ago"}</p>
           </div>
         </div>
 
@@ -79,8 +44,8 @@ const FundCard = ({ owner, title, description, target, deadline, amountCollected
     
 
       </div>
-    </div>):null}</>
+    </div></>
   )
 }
 
-export default FundCard
+export default DisplayCard

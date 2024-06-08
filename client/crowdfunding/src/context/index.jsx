@@ -8,9 +8,11 @@ import { useState ,useEffect} from 'react';
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
+  // const [nextnft ,setnextnft] = useState(0)
+  const [completed,setcompleted]=useState(false)
   const { contract } = useContract('0xD7974C55b27869A279E4a30f4Aa02336524eA117');
   const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
-
+  const [currentIndex, setCurrentIndex] = useState(0);
   const address = useAddress();
   const connect = useMetamask();
   const[createReceipt,setcreatereceipt] = useState(null)
@@ -39,7 +41,7 @@ export const StateContextProvider = ({ children }) => {
       console.log("contract call failure", error)
     }
   }
-
+const [pid ,setPid] = useState(0)
   const getCampaigns = async () => {
     const campaigns = await contract.call('getCampaign');
 
@@ -52,9 +54,10 @@ export const StateContextProvider = ({ children }) => {
             deadline: undefined,
             amountCollected: undefined,
             image: campaign.image,
-            pId: i
+            pId: i,
+            completed:completed
         };
-
+          setPid(i)
         // Check if campaign.target is defined before attempting to format it
         if (campaign.target !== undefined) {
             parsedCampaign.target = ethers.utils.formatEther(campaign.target.toString());
@@ -91,6 +94,18 @@ export const StateContextProvider = ({ children }) => {
     return data;
   }
 
+
+
+  const generateDonationReceipt = async (campaignId, donationIndex) => {
+    try {
+      const receipt = await contract.call('getTransactionReceipt', [campaignId, donationIndex]);
+      console.log("Donation Receipt:", receipt);
+      // Here you can handle the receipt data as needed (e.g., display it on UI, save to state, etc.)
+    } catch (error) {
+      console.error("Error fetching donation receipt:", error);
+    }
+  }
+
   const getDonations = async (pId) => {
     const donations = await contract.call('getDonators', [pId]);
     const numberOfDonations = donations[0].length;
@@ -118,7 +133,14 @@ export const StateContextProvider = ({ children }) => {
         getCampaigns,
         getUserCampaigns,
         donate,
-        getDonations
+        getDonations,
+        generateDonationReceipt,
+        currentIndex,
+        completed,
+        setcompleted,
+      pid,
+     
+        setCurrentIndex,
       }}
     >
       {children}
